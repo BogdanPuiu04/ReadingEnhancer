@@ -19,7 +19,7 @@ namespace ReadingEnhancer.Controllers
                 var client = new HttpClient();
                 var request = new HttpRequestMessage
                 {
-                    Method = System.Net.Http.HttpMethod.Post,
+                    Method = HttpMethod.Post,
                     RequestUri = new Uri("https://bionic-reading1.p.rapidapi.com/convert"),
                     Headers =
                     {
