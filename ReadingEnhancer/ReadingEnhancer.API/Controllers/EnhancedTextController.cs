@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using ReadingEnhancer.Application.Services;
+using ReadingEnhancer.Domain.Entities;
 
 namespace ReadingEnhancer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class EnhancedTextController : ControllerBase
-    {   
+    {
+        private readonly IEnhancedTextService _enhancedService;
+
+        public EnhancedTextController(IEnhancedTextService enhancedTextService)
+        {
+            _enhancedService = enhancedTextService;
+        }
+
         [HttpPost("request")]
         public async Task<IActionResult> Req(string content, string responseType, int fixation, int saccade)
         {
@@ -48,6 +57,20 @@ namespace ReadingEnhancer.Controllers
             }
 
             return Ok(body);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var result = await _enhancedService.GetAllAsync();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddAsync(EnhancedText text)
+        {
+            var result = await _enhancedService.AddAsync(text);
+            return Ok(result);
         }
     }
 }

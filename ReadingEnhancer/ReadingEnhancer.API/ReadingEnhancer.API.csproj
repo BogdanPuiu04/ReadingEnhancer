@@ -9,4 +9,9 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ReadingEnhancer.Application\ReadingEnhancer.Application.csproj" />
+      <ProjectReference Include="..\ReadingEnhancer.IoC\ReadingEnhancer.IoC.csproj" />
+    </ItemGroup>
+
 </Project>

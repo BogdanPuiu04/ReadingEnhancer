@@ -1,19 +1,17 @@
-﻿using System.Linq.Expressions;
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ReadingEnhancer.Domain.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetFirstAsync(string id);
+        Task<List<T>> GetAllAsync();
 
-        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate);
+        Task<T> AddAsync(T entity);
 
-        Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate);
+        Task RemoveOne(T entity);
 
-        Task AddAsync(T entity);
-
-        Task RemoveAsync(T entity);
-
-        Task UpdateAsync(T entity);
+        Task<T> UpdateOne(string id, T entity);
     }
 }

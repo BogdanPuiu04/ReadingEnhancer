@@ -2,7 +2,7 @@
 
 namespace ReadingEnhancer.Domain.Repositories
 {
-    public interface IEnhancedText : IGenericRepository<EnhancedText>
+    public interface IEnhancedTextRepository : IGenericRepository<EnhancedText>
     {
     }
 }
