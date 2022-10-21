@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-
-namespace ReadingEnhancer.Domain.Repositories
+﻿namespace ReadingEnhancer.Domain.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {

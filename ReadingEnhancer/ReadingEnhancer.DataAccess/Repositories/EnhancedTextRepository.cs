@@ -10,35 +10,35 @@ namespace ReadingEnhancer.DataAccess.Repositories
 {
     public class EnhancedTextRepository : IEnhancedTextRepository
     {
-        private readonly IMongoCollection<EnhancedText> enhancedTextsCollection;
+        private readonly IMongoCollection<EnhancedText> _enhancedTextsCollection;
 
         public EnhancedTextRepository(IOptions<DatabaseSettings> databaseSettings)
         {
             var mongoClient = new MongoClient(databaseSettings.Value.ConnectionString);
             var mongoDatabase = mongoClient.GetDatabase(databaseSettings.Value.DatabaseName);
-            enhancedTextsCollection =
+            _enhancedTextsCollection =
                 mongoDatabase.GetCollection<EnhancedText>(databaseSettings.Value.EnhancedTextsCollection);
         }
 
         public async Task<List<EnhancedText>> GetAllAsync() =>
-            await enhancedTextsCollection.Find(_ => true).ToListAsync();
+            await _enhancedTextsCollection.Find(_ => true).ToListAsync();
 
         public async Task<EnhancedText> GetFirstAsync(string id) =>
-            await enhancedTextsCollection.Find(text => text.Id == id).Limit(1).SingleOrDefaultAsync();
+            await _enhancedTextsCollection.Find(text => text.Id == id).Limit(1).SingleOrDefaultAsync();
 
         public async Task<EnhancedText> AddAsync(EnhancedText entity)
         {
-            await enhancedTextsCollection.InsertOneAsync(entity);
+            await _enhancedTextsCollection.InsertOneAsync(entity);
             return entity;
         }
 
         public async Task RemoveOne(EnhancedText entity) =>
-            await enhancedTextsCollection.DeleteOneAsync(x => x.Id == entity.Id);
+            await _enhancedTextsCollection.DeleteOneAsync(x => x.Id == entity.Id);
 
 
         public async Task<EnhancedText> UpdateOne(string id, EnhancedText entity)
         {
-            await enhancedTextsCollection.ReplaceOneAsync(text => text.Id == id, entity);
+            await _enhancedTextsCollection.ReplaceOneAsync(text => text.Id == id, entity);
             return await GetFirstAsync(id);
         }
     }

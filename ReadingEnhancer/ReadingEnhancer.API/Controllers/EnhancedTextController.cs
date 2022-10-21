@@ -72,5 +72,13 @@ namespace ReadingEnhancer.Controllers
             var result = await _enhancedService.AddAsync(text);
             return Ok(result);
         }
-    }
+
+        [HttpGet("/{id}")]
+        public async Task<IActionResult> Test(string id)
+        {
+            var test = await _enhancedService.GetAsync(id);
+            return Ok(test);
+        }
+
+}
 }
