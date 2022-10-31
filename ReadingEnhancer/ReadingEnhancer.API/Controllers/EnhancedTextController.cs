@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.IO;
 using ReadingEnhancer.Application.Services;
 using ReadingEnhancer.Domain.Entities;
 
@@ -20,9 +24,10 @@ namespace ReadingEnhancer.Controllers
         }
 
         [HttpPost("request")]
-        public async Task<IActionResult> Req(string content, string responseType, int fixation, int saccade)
+        public async Task<IActionResult> Req([FromBody]string content)
         {
             var body = "";
+            Console.WriteLine(content);
             try
             {
                 var client = new HttpClient();
@@ -40,23 +45,23 @@ namespace ReadingEnhancer.Controllers
                         {
                             "content", content
                         },
-                        {"response_type", responseType},
+                        {"response_type", "html"},
                         {"request_type", "html"},
-                        {"fixation", fixation.ToString()},
-                        {"saccade", saccade.ToString()},
+                        {"fixation", "1"},
+                        {"saccade", "10"},
                     }),
                 };
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 body = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(body);
             }
             catch
             {
                 Console.WriteLine("Error was caught");
             }
 
-            return Ok(body);
+            var res = JsonSerializer.Serialize(body);
+            return Ok(res);
         }
 
         [HttpGet]
