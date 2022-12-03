@@ -1,10 +1,11 @@
-﻿using ReadingEnhancer.Domain.Entities;
+﻿using ReadingEnhancer.Application.Models;
+using ReadingEnhancer.Domain.Entities;
 
 namespace ReadingEnhancer.Application.Services.Interfaces;
 
 public interface IUserService
 {
-    Task<User> Authenticate(string username, string password);
+    Task<ResponseUserModel> Authenticate(AuthUserModel authUserModel);
     Task<List<User>> GetAllAsync();
     Task<User> GetAsync(string id);
     Task<User> AddAsync(User user);

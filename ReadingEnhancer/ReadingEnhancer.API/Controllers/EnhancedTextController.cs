@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.IO;
 using ReadingEnhancer.Application.Services;
+using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.Domain.Entities;
 
 namespace ReadingEnhancer.Controllers

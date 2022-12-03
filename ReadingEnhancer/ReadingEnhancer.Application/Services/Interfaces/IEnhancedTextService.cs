@@ -1,6 +1,6 @@
 ﻿using ReadingEnhancer.Domain.Entities;
 
-namespace ReadingEnhancer.Application.Services
+namespace ReadingEnhancer.Application.Services.Interfaces
 {
     public interface IEnhancedTextService
     {

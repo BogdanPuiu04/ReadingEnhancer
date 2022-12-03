@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using ReadingEnhancer.Application.Services;
+using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.DataAccess.Configurations;
 using ReadingEnhancer.DataAccess.Repositories;
 using ReadingEnhancer.Domain.Repositories;

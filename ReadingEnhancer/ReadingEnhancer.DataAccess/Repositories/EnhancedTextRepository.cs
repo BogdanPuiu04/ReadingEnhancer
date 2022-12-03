@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -30,6 +32,12 @@ namespace ReadingEnhancer.DataAccess.Repositories
         {
             await _enhancedTextsCollection.InsertOneAsync(entity);
             return entity;
+        }
+
+        public async Task<EnhancedText> GetFirstAsync(Expression<Func<EnhancedText, bool>> predicate)
+        {
+            var enhancedText = await _enhancedTextsCollection.Find(predicate).Limit(1).SingleOrDefaultAsync();
+            return enhancedText;
         }
 
         public async Task RemoveOne(EnhancedText entity) =>

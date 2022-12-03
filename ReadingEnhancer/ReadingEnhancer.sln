@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadingEnhancer.DataAccess"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadingEnhancer.IoC", "ReadingEnhancer.IoC\ReadingEnhancer.IoC.csproj", "{5322694C-C500-464C-B246-804616E85B2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadingEnhancer.Common", "ReadingEnhancer.Common\ReadingEnhancer.Common.csproj", "{FB741E83-235E-47AB-B065-4928CDDFCA47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{5322694C-C500-464C-B246-804616E85B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5322694C-C500-464C-B246-804616E85B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5322694C-C500-464C-B246-804616E85B2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB741E83-235E-47AB-B065-4928CDDFCA47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB741E83-235E-47AB-B065-4928CDDFCA47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB741E83-235E-47AB-B065-4928CDDFCA47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB741E83-235E-47AB-B065-4928CDDFCA47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

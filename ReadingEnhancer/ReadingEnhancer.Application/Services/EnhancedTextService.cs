@@ -1,4 +1,5 @@
-﻿using ReadingEnhancer.Domain.Entities;
+﻿using ReadingEnhancer.Application.Services.Interfaces;
+using ReadingEnhancer.Domain.Entities;
 using ReadingEnhancer.Domain.Repositories;
 
 namespace ReadingEnhancer.Application.Services
