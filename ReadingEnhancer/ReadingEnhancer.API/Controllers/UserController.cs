@@ -24,5 +24,13 @@ namespace ReadingEnhancer.Controllers
             var user = await _userService.Authenticate(authUserModel);
             return Ok(user);
         }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterUserModel registerUserModel)
+        {
+            var user = await _userService.AddAsync(registerUserModel);
+            return Ok(user);
+        }
     }
 }

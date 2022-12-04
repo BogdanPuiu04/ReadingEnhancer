@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.IO;
 using ReadingEnhancer.Application.Services;
@@ -15,6 +16,7 @@ namespace ReadingEnhancer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EnhancedTextController : ControllerBase
     {
         private readonly IEnhancedTextService _enhancedService;
@@ -25,7 +27,7 @@ namespace ReadingEnhancer.Controllers
         }
 
         [HttpPost("request")]
-        public async Task<IActionResult> Req([FromBody]string content)
+        public async Task<IActionResult> Req([FromBody] string content)
         {
             var body = "";
             Console.WriteLine(content);
@@ -85,6 +87,5 @@ namespace ReadingEnhancer.Controllers
             var test = await _enhancedService.GetAsync(id);
             return Ok(test);
         }
-
-}
+    }
 }

@@ -22,15 +22,15 @@ namespace ReadingEnhancer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDatabase(Configuration);
-            
+            services.AddAuthentication(Configuration);
             services.AddControllersService();
-            
             services.AddServices();
-            
+            services.AddDatabase(Configuration);
+
             services.AddRepositories();
-            
+
             services.RegisterSwagger();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,13 +47,13 @@ namespace ReadingEnhancer
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ReadingEnhancer.API.API v1"));
-            
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ReadingEnhancer.API v1"));
+
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseRouting();
-            
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

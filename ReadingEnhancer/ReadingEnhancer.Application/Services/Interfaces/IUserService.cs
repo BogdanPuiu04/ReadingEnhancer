@@ -8,7 +8,7 @@ public interface IUserService
     Task<ResponseUserModel> Authenticate(AuthUserModel authUserModel);
     Task<List<User>> GetAllAsync();
     Task<User> GetAsync(string id);
-    Task<User> AddAsync(User user);
+    Task<ResponseUserModel> AddAsync(RegisterUserModel user);
     Task<User> UpdateAsync(string id, User user);
     Task<bool> DeleteAsync(string id);
 }
