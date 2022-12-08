@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
+using ReadingEnhancer.Common;
 using ReadingEnhancer.Common.Handlers;
 using ReadingEnhancer.Domain.Entities;
 using ReadingEnhancer.Domain.Repositories;
@@ -19,7 +20,7 @@ public class UserService : IUserService
         _configuration = configuration;
     }
 
-    public async Task<ResponseUserModel> Authenticate(AuthUserModel authUserModel)
+    public async Task<AppResponse<ResponseUserModel>> Authenticate(AuthUserModel authUserModel)
     {
         var matchingUser = await _userRepository.GetFirstAsync(user => user.Username == authUserModel.Username);
         if (!PasswordHelper.VerifyPassword(authUserModel.Password, matchingUser.Password))
@@ -29,20 +30,20 @@ public class UserService : IUserService
             Name = $"{matchingUser.Name} {matchingUser.Surname}",
             Token = JwtHandler.GetJwtToken(matchingUser.Id, _configuration)
         };
-        return res;
+        return AppResponse<ResponseUserModel>.Success(res);
     }
 
-    public Task<List<User>> GetAllAsync()
+    public Task<AppResponse<List<User>>> GetAllAsync()
     {
         throw new NotImplementedException();
     }
 
-    public Task<User> GetAsync(string id)
+    public Task<AppResponse<User>> GetAsync(string id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ResponseUserModel> AddAsync(RegisterUserModel registerUserModel)
+    public async Task<AppResponse<ResponseUserModel>> AddAsync(RegisterUserModel registerUserModel)
     {
         var user = await _userRepository.GetFirstAsync(user => user.Username == registerUserModel.Username);
         var generatedUser = new User()
@@ -55,19 +56,19 @@ public class UserService : IUserService
             Password = PasswordHelper.ComputePasswordHash(registerUserModel.Password)
         };
         await _userRepository.AddAsync(generatedUser);
-        return new ResponseUserModel()
+        return AppResponse<ResponseUserModel>.Success((new ResponseUserModel
         {
             Name = $"{generatedUser.Name} {generatedUser.Surname}",
             Token = JwtHandler.GetJwtToken(generatedUser.Id, _configuration)
-        };
+        }));
     }
 
-    public Task<User> UpdateAsync(string id, User user)
+    public Task<AppResponse<User>> UpdateAsync(string id, User user)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteAsync(string id)
+    public Task<AppResponse<bool>> DeleteAsync(string id)
     {
         throw new NotImplementedException();
     }

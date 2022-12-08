@@ -1,4 +1,5 @@
 ﻿using ReadingEnhancer.Application.Services.Interfaces;
+using ReadingEnhancer.Common;
 using ReadingEnhancer.Domain.Entities;
 using ReadingEnhancer.Domain.Repositories;
 
@@ -15,13 +16,13 @@ namespace ReadingEnhancer.Application.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<EnhancedText>> GetAllAsync()
+        public async Task<AppResponse<List<EnhancedText>>> GetAllAsync()
         {
             var enhancedTexts = await _enhancedTextRepository.GetAllAsync();
-            return enhancedTexts;
+            return AppResponse<List<EnhancedText>>.Success(enhancedTexts);
         }
 
-        public async Task<string> GetAsync(string id)
+        public async Task<AppResponse<string>> GetAsync(string id)
         {
             var enhancedText = await _enhancedTextRepository.GetFirstAsync(id);
             var request = new HttpRequestMessage
@@ -46,26 +47,26 @@ namespace ReadingEnhancer.Application.Services
             var responseString = await _httpClient.SendAsync(request);
             responseString.EnsureSuccessStatusCode();
             var body = await responseString.Content.ReadAsStringAsync();
-            return body;
+            return AppResponse<string>.Success(body);
         }
 
-        public async Task<EnhancedText> AddAsync(EnhancedText text)
+        public async Task<AppResponse<EnhancedText>> AddAsync(EnhancedText text)
         {
             var enhancedText = await _enhancedTextRepository.AddAsync(text);
-            return enhancedText;
+            return AppResponse<EnhancedText>.Success(enhancedText);
         }
 
-        public async Task<EnhancedText> UpdateAsync(string id, EnhancedText text)
+        public async Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text)
         {
             var response = await _enhancedTextRepository.UpdateOne(id, text);
-            return response;
+            return AppResponse<EnhancedText>.Success(response);
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<AppResponse<bool>> DeleteAsync(string id)
         {
             var result = await GetAsync(id);
-          //  await _enhancedTextRepository.RemoveOne(result);
-            return true;
+            //  await _enhancedTextRepository.RemoveOne(result);
+            return AppResponse<bool>.Success(true);
         }
     }
 }

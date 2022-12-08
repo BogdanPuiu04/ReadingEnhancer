@@ -1,13 +1,14 @@
-﻿using ReadingEnhancer.Domain.Entities;
+﻿using ReadingEnhancer.Common;
+using ReadingEnhancer.Domain.Entities;
 
 namespace ReadingEnhancer.Application.Services.Interfaces
 {
     public interface IEnhancedTextService
     {
-        Task<List<EnhancedText>> GetAllAsync();
-        Task<string> GetAsync(string id);
-        Task<EnhancedText> AddAsync(EnhancedText text);
-        Task<EnhancedText> UpdateAsync(string id, EnhancedText text);
-        Task<bool> DeleteAsync(string id);
+        Task<AppResponse<List<EnhancedText>>> GetAllAsync();
+        Task<AppResponse<string>> GetAsync(string id);
+        Task<AppResponse<EnhancedText>> AddAsync(EnhancedText text);
+        Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text);
+        Task<AppResponse<bool>> DeleteAsync(string id);
     }
 }

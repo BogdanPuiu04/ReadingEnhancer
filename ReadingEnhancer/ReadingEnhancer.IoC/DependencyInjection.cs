@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using ReadingEnhancer.Application.Services;
 using ReadingEnhancer.Application.Services.Interfaces;
+using ReadingEnhancer.Common.Handlers;
 using ReadingEnhancer.DataAccess.Configurations;
 using ReadingEnhancer.DataAccess.Repositories;
 using ReadingEnhancer.Domain.Repositories;
@@ -71,10 +72,8 @@ namespace ReadingEnhancer.IoC
 
         public static void AddControllersService(this IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson(o =>
-            {
-                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            });
+            services.AddControllers(options => options.Filters.Add(typeof(ValidateDataToCustomResponse)))
+                .AddNewtonsoftJson(o => { o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; });
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
         }
 

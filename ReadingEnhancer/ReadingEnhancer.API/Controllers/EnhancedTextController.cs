@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson.IO;
-using ReadingEnhancer.Application.Services;
 using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.Domain.Entities;
 

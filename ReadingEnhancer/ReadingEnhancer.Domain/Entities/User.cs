@@ -8,6 +8,7 @@ namespace ReadingEnhancer.Domain.Entities
         public string Name { get; set; }  
         [MinLength(2)]
         public string Surname { get; set; }
+        [MinLength(3)]
         public string Username { get; set; }
         [MinLength(8)]
         public string Password { get; set; }
