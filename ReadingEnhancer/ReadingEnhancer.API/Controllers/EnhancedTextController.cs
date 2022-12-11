@@ -13,7 +13,7 @@ namespace ReadingEnhancer.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class EnhancedTextController : ControllerBase
+    public class EnhancedTextController : BaseController
     {
         private readonly IEnhancedTextService _enhancedService;
 
@@ -66,6 +66,8 @@ namespace ReadingEnhancer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
+            var id = GetUserBsonId();
+            Console.WriteLine(id);
             var result = await _enhancedService.GetAllAsync();
             return Ok(result);
         }
