@@ -72,4 +72,14 @@ public class UserService : IUserService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<AppResponse<string>> RefreshToken(string id)
+    {
+        var refreshToken = JwtHandler.GetJwtToken(id, _configuration);
+        var refreshTokenResponse = new RefreshTokenResponseModel
+        {
+            Token = refreshToken
+        };
+        return await Task.FromResult(AppResponse<string>.Success(refreshTokenResponse.Token));
+    }
 }
