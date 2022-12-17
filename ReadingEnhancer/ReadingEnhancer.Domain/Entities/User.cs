@@ -7,7 +7,7 @@ namespace ReadingEnhancer.Domain.Entities
         [MinLength(2)]
         public string Name { get; set; }  
         [MinLength(2)]
-        public string Surname { get; set; }
+        public string LastName { get; set; }
         [MinLength(3)]
         public string Username { get; set; }
         [MinLength(8)]

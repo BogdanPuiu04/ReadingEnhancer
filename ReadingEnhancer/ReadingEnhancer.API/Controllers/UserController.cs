@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReadingEnhancer.Application.Models;
@@ -27,6 +28,7 @@ namespace ReadingEnhancer.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserModel registerUserModel)
         {
+            Console.WriteLine(registerUserModel);
             var user = await _userService.AddAsync(registerUserModel);
             return Ok(user);
         }

@@ -27,7 +27,7 @@ public class UserService : IUserService
             throw new Exception("Invalid Password");
         var res = new ResponseUserModel()
         {
-            Name = $"{matchingUser.Name} {matchingUser.Surname}",
+            Name = $"{matchingUser.Name} {matchingUser.LastName}",
             Token = JwtHandler.GetJwtToken(matchingUser.Id, _configuration)
         };
         return AppResponse<ResponseUserModel>.Success(res);
@@ -49,8 +49,8 @@ public class UserService : IUserService
         var generatedUser = new User()
         {
             Id = ObjectId.GenerateNewId().ToString(),
-            Name = registerUserModel.Name,
-            Surname = registerUserModel.Surname,
+            Name = registerUserModel.FirstName,
+            LastName = registerUserModel.LastName,
             Username = registerUserModel.Username,
             IsAdmin = false,
             Password = PasswordHelper.ComputePasswordHash(registerUserModel.Password)
@@ -58,7 +58,7 @@ public class UserService : IUserService
         await _userRepository.AddAsync(generatedUser);
         return AppResponse<ResponseUserModel>.Success((new ResponseUserModel
         {
-            Name = $"{generatedUser.Name} {generatedUser.Surname}",
+            Name = $"{generatedUser.Name} {generatedUser.LastName}",
             Token = JwtHandler.GetJwtToken(generatedUser.Id, _configuration)
         }));
     }

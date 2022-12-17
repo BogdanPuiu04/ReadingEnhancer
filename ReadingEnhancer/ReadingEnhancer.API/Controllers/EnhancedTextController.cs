@@ -26,7 +26,6 @@ namespace ReadingEnhancer.Controllers
         public async Task<IActionResult> Req([FromBody] string content)
         {
             var body = "";
-            Console.WriteLine(content);
             try
             {
                 var client = new HttpClient();
