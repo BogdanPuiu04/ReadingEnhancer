@@ -10,5 +10,7 @@ namespace ReadingEnhancer.Application.Services.Interfaces
         Task<AppResponse<EnhancedText>> AddAsync(EnhancedText text);
         Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text);
         Task<AppResponse<bool>> DeleteAsync(string id);
+        Task<AppResponse<string>> EnhanceText(string content);
+        Task<AppResponse<string>> EnhanceWebpage(string url);
     }
 }

@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="JsonParser" Version="1.0.2" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.25.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />

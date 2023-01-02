@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -25,41 +23,8 @@ namespace ReadingEnhancer.Controllers
         [HttpPost("request")]
         public async Task<IActionResult> Req([FromBody] string content)
         {
-            var body = "";
-            try
-            {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri("https://bionic-reading1.p.rapidapi.com/convert"),
-                    Headers =
-                    {
-                        {"X-RapidAPI-Key", "afb7bc5b7amsh840a44eaaf446ebp1d57f1jsn36b271e187bc"},
-                        {"X-RapidAPI-Host", "bionic-reading1.p.rapidapi.com"},
-                    },
-                    Content = new FormUrlEncodedContent(new Dictionary<string, string>
-                    {
-                        {
-                            "content", content
-                        },
-                        {"response_type", "html"},
-                        {"request_type", "html"},
-                        {"fixation", "1"},
-                        {"saccade", "10"},
-                    }),
-                };
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                body = await response.Content.ReadAsStringAsync();
-            }
-            catch
-            {
-                Console.WriteLine("Error was caught");
-            }
-
-            var res = JsonSerializer.Serialize(body);
-            return Ok(res);
+            var res = await _enhancedService.EnhanceText(content);
+            return Ok(JsonSerializer.Serialize(res.Data));
         }
 
         [HttpGet]
@@ -83,6 +48,13 @@ namespace ReadingEnhancer.Controllers
         {
             var test = await _enhancedService.GetAsync(id);
             return Ok(test);
+        }
+
+        [HttpPost("EnhanceUrl")]
+        public async Task<IActionResult> EnhanceUrl([FromBody] string url)
+        {
+            var enhancedWebpage = await _enhancedService.EnhanceWebpage(url);
+            return Ok(JsonSerializer.Serialize(enhancedWebpage.Data));
         }
     }
 }

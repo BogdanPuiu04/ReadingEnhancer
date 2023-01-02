@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +27,7 @@ namespace ReadingEnhancer.IoC
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<IEnhancedTextService, EnhancedTextService>();
-            services.AddHttpClient<IEnhancedTextService, EnhancedTextService>(client =>
-            {
-                client.BaseAddress = new Uri("https://bionic-reading1.p.rapidapi.com/convert");
-            });
+            services.AddHttpClient<IEnhancedTextService, EnhancedTextService>();
             services.AddScoped<IUserService, UserService>();
         }
 
