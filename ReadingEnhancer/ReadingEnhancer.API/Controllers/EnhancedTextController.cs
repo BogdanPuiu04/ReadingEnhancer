@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
-using ReadingEnhancer.Domain.Entities;
 
 namespace ReadingEnhancer.Controllers
 {
@@ -30,16 +31,14 @@ namespace ReadingEnhancer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var id = GetUserBsonId();
-            Console.WriteLine(id);
             var result = await _enhancedService.GetAllAsync();
-            return Ok(result);
+            return Ok(result.Data.First());
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync(EnhancedText text)
+        public async Task<IActionResult> AddAsync(ReadingTextModel readingText)
         {
-            var result = await _enhancedService.AddAsync(text);
+            var result = await _enhancedService.AddAsync(readingText);
             return Ok(result);
         }
 

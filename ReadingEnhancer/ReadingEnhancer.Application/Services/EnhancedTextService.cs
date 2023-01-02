@@ -1,4 +1,6 @@
-﻿using ReadingEnhancer.Application.Services.Interfaces;
+﻿using MongoDB.Bson;
+using ReadingEnhancer.Application.Models;
+using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.Common;
 using ReadingEnhancer.Domain.Entities;
 using ReadingEnhancer.Domain.Repositories;
@@ -27,36 +29,29 @@ namespace ReadingEnhancer.Application.Services
 
         public async Task<AppResponse<string>> GetAsync(string id)
         {
-            var enhancedText = await _enhancedTextRepository.GetFirstAsync(id);
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                Headers =
-                {
-                    {"X-RapidAPI-Key", "afb7bc5b7amsh840a44eaaf446ebp1d57f1jsn36b271e187bc"},
-                    {"X-RapidAPI-Host", "bionic-reading1.p.rapidapi.com"},
-                },
-                Content = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    {
-                        "content", enhancedText.Text
-                    },
-                    {"response_type", "html"},
-                    {"request_type", "html"},
-                    {"fixation", enhancedText.Fixation.ToString()},
-                    {"saccade", enhancedText.Saccade.ToString()},
-                }),
-            };
-            var responseString = await _httpClient.SendAsync(request);
-            responseString.EnsureSuccessStatusCode();
-            var body = await responseString.Content.ReadAsStringAsync();
-            return AppResponse<string>.Success(body);
+            return AppResponse<string>.Success("true");
         }
 
-        public async Task<AppResponse<EnhancedText>> AddAsync(EnhancedText text)
+        public async Task<AppResponse<EnhancedText>> AddAsync(ReadingTextModel readingText)
         {
-            var enhancedText = await _enhancedTextRepository.AddAsync(text);
-            return AppResponse<EnhancedText>.Success(enhancedText);
+            var questions = (from question in readingText.Questions
+                let answers =
+                    question.Answers.Select(answer => new Answer()
+                        {
+                            Id = ObjectId.GenerateNewId().ToString(), Text = answer.Text, IsCorrect = answer.IsCorrect
+                        })
+                        .ToList()
+                select new Question()
+                    {Id = ObjectId.GenerateNewId().ToString(), Text = question.Text, Answers = answers}).ToList();
+
+            var enhancedText = new EnhancedText()
+            {
+                Id = ObjectId.GenerateNewId().ToString(),
+                Text = readingText.Text,
+                QuestionsList = questions
+            };
+            var test = await _enhancedTextRepository.AddAsync(enhancedText);
+            return AppResponse<EnhancedText>.Success(test);
         }
 
         public async Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text)
