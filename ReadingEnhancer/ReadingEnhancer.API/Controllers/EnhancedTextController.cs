@@ -35,6 +35,13 @@ namespace ReadingEnhancer.Controllers
             return Ok(result.Data.First());
         }
 
+        [HttpGet("GetRandomText")]
+        public async Task<IActionResult> GetRandomAsync()
+        {
+            var result = await _enhancedService.GetRandomTextAsync();
+            return Ok(result.Data);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddAsync(ReadingTextModel readingText)
         {

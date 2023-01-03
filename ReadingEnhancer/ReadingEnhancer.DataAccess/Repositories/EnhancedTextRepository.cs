@@ -13,6 +13,7 @@ namespace ReadingEnhancer.DataAccess.Repositories
     public class EnhancedTextRepository : IEnhancedTextRepository
     {
         private readonly IMongoCollection<EnhancedText> _enhancedTextsCollection;
+        private readonly Random _random;
 
         public EnhancedTextRepository(IOptions<DatabaseSettings> databaseSettings)
         {
@@ -20,10 +21,18 @@ namespace ReadingEnhancer.DataAccess.Repositories
             var mongoDatabase = mongoClient.GetDatabase(databaseSettings.Value.DatabaseName);
             _enhancedTextsCollection =
                 mongoDatabase.GetCollection<EnhancedText>(databaseSettings.Value.EnhancedTextsCollection);
+            _random = new Random();
         }
 
         public async Task<List<EnhancedText>> GetAllAsync() =>
             await _enhancedTextsCollection.Find(_ => true).ToListAsync();
+
+        public async Task<EnhancedText> GetRandomAsync()
+        {
+            var allTexts = await GetAllAsync();
+            var index = _random.Next(allTexts.Count);
+            return allTexts[index];
+        }
 
         public async Task<EnhancedText> GetFirstAsync(string id) =>
             await _enhancedTextsCollection.Find(text => text.Id == id).Limit(1).SingleOrDefaultAsync();

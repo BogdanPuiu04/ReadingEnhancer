@@ -60,6 +60,12 @@ namespace ReadingEnhancer.Application.Services
             return AppResponse<EnhancedText>.Success(response);
         }
 
+        public async Task<AppResponse<EnhancedText>> GetRandomTextAsync()
+        {
+            var enhancedText = await _enhancedTextRepository.GetRandomAsync();
+            return AppResponse<EnhancedText>.Success(enhancedText);
+        }
+
         public async Task<AppResponse<bool>> DeleteAsync(string id)
         {
             var result = await GetAsync(id);

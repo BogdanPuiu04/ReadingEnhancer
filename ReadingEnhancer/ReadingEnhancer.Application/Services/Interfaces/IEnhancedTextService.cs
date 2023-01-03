@@ -7,6 +7,7 @@ namespace ReadingEnhancer.Application.Services.Interfaces
     public interface IEnhancedTextService
     {
         Task<AppResponse<List<EnhancedText>>> GetAllAsync();
+        Task<AppResponse<EnhancedText>> GetRandomTextAsync();
         Task<AppResponse<string>> GetAsync(string id);
         Task<AppResponse<EnhancedText>> AddAsync(ReadingTextModel text);
         Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text);
