@@ -2,6 +2,7 @@
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.Common;
+using ReadingEnhancer.Common.CustomExceptions;
 using ReadingEnhancer.Domain.Entities;
 using ReadingEnhancer.Domain.Repositories;
 
@@ -11,20 +12,29 @@ namespace ReadingEnhancer.Application.Services
     {
         private readonly IEnhancedTextRepository _enhancedTextRepository;
         private readonly HttpClient _httpClient;
+        private readonly IUserRepository _userRepository;
 
         private static bool ValidateUri(string url) => Uri.TryCreate(url, UriKind.Absolute, out var uriResult) &&
                                                        uriResult.Scheme == Uri.UriSchemeHttps;
 
-        public EnhancedTextService(IEnhancedTextRepository enhancedTextRepository, HttpClient httpClient)
+        public EnhancedTextService(IEnhancedTextRepository enhancedTextRepository, HttpClient httpClient,
+            IUserRepository userRepository)
         {
             _enhancedTextRepository = enhancedTextRepository;
             _httpClient = httpClient;
+            _userRepository = userRepository;
         }
 
-        public async Task<AppResponse<List<EnhancedText>>> GetAllAsync()
+        public async Task<AppResponse<AllReadingTextsResponse>> GetAllAsync(string userId)
         {
+            var user = await _userRepository.GetFirstAsync(userId);
+            if (!user.IsAdmin) throw new UnauthorizedException("The user is not an admin.");
             var enhancedTexts = await _enhancedTextRepository.GetAllAsync();
-            return AppResponse<List<EnhancedText>>.Success(enhancedTexts);
+            var allTextsResponse = new AllReadingTextsResponse()
+            {
+                Texts = enhancedTexts
+            };
+            return AppResponse<AllReadingTextsResponse>.Success(allTextsResponse);
         }
 
         public async Task<AppResponse<string>> GetAsync(string id)

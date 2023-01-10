@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,8 +29,8 @@ namespace ReadingEnhancer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _enhancedService.GetAllAsync();
-            return Ok(result.Data.First());
+            var result = await _enhancedService.GetAllAsync(GetUserBsonId());
+            return Ok(result.Data);
         }
 
         [HttpGet("GetRandomText")]

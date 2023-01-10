@@ -28,7 +28,8 @@ public class UserService : IUserService
         var res = new ResponseUserModel()
         {
             Name = $"{matchingUser.Name} {matchingUser.LastName}",
-            Token = JwtHandler.GetJwtToken(matchingUser.Id, _configuration)
+            Token = JwtHandler.GetJwtToken(matchingUser.Id, _configuration),
+            IsAdmin = matchingUser.IsAdmin
         };
         return AppResponse<ResponseUserModel>.Success(res);
     }
@@ -59,7 +60,8 @@ public class UserService : IUserService
         return AppResponse<ResponseUserModel>.Success((new ResponseUserModel
         {
             Name = $"{generatedUser.Name} {generatedUser.LastName}",
-            Token = JwtHandler.GetJwtToken(generatedUser.Id, _configuration)
+            Token = JwtHandler.GetJwtToken(generatedUser.Id, _configuration),
+            IsAdmin = generatedUser.IsAdmin
         }));
     }
 

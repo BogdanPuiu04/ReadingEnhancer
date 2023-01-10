@@ -36,6 +36,9 @@ public class Middleware
                 case ConflictException:
                     response.StatusCode = (int) HttpStatusCode.Conflict;
                     break;
+                case UnauthorizedException:
+                    response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    break;
                 default:
                     response.StatusCode = (int) HttpStatusCode.InternalServerError;
                     isInternalServerError = true;
