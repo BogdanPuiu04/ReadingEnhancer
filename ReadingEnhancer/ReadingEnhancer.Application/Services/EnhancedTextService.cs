@@ -70,10 +70,18 @@ namespace ReadingEnhancer.Application.Services
             return AppResponse<EnhancedText>.Success(response);
         }
 
-        public async Task<AppResponse<EnhancedText>> GetRandomTextAsync()
+        public async Task<AppResponse<ReadingTextResponseModel>> GetRandomTextAsync()
         {
             var enhancedText = await _enhancedTextRepository.GetRandomAsync();
-            return AppResponse<EnhancedText>.Success(enhancedText);
+            var wordsCount = CalculateWords(enhancedText.Text);
+            var enhanced = await EnhanceText(enhancedText.Text);
+            enhancedText.Text = enhanced.Data;
+            var result = new ReadingTextResponseModel()
+            {
+                Text = enhancedText,
+                WordCount = wordsCount
+            };
+            return AppResponse<ReadingTextResponseModel>.Success(result);
         }
 
         public async Task<AppResponse<bool>> DeleteAsync(string id)
@@ -158,6 +166,27 @@ namespace ReadingEnhancer.Application.Services
             }
 
             return AppResponse<string>.Success(res);
+        }
+
+        private static int CalculateWords(string text)
+        {
+            int wordCount = 0, index = 0;
+
+            while (index < text.Length && char.IsWhiteSpace(text[index]))
+                index++;
+
+            while (index < text.Length)
+            {
+                while (index < text.Length && !char.IsWhiteSpace(text[index]))
+                    index++;
+
+                wordCount++;
+
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                    index++;
+            }
+
+            return wordCount;
         }
     }
 }
