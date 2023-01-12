@@ -1,9 +1,11 @@
-﻿using System.Text.Json;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
+using ReadingEnhancer.Domain.Entities;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ReadingEnhancer.Controllers
 {
@@ -59,6 +61,13 @@ namespace ReadingEnhancer.Controllers
         {
             var enhancedWebpage = await _enhancedService.EnhanceWebpage(url);
             return Ok(JsonSerializer.Serialize(enhancedWebpage.Data));
+        }
+
+        [HttpPost("ChangeText")]
+        public async Task<IActionResult> ChangeText([FromBody] EnhancedText text)
+        {
+            var result = await _enhancedService.UpdateAsync(text.Id, text);
+            return Ok(result);
         }
     }
 }

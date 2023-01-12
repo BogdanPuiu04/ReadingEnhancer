@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.Common;
@@ -66,6 +67,19 @@ namespace ReadingEnhancer.Application.Services
 
         public async Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text)
         {
+            foreach (var question in text.QuestionsList)
+            {
+                if (question.Id.Contains("not"))
+                {
+                    question.Id = ObjectId.GenerateNewId().ToString();
+                }
+
+                if (question.Answers.IsNullOrEmpty()) continue;
+                foreach (var answer in question.Answers.Where(answer => answer.Id.Contains("not")))
+                {
+                    answer.Id = ObjectId.GenerateNewId().ToString();
+                }
+            }
             var response = await _enhancedTextRepository.UpdateOne(id, text);
             return AppResponse<EnhancedText>.Success(response);
         }
