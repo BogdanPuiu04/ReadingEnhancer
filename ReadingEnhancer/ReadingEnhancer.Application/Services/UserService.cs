@@ -102,4 +102,30 @@ public class UserService : IUserService
         await UpdateAsync(userId, user);
         return AppResponse<bool>.Success(true);
     }
+
+    public async Task<AppResponse<AllUsersHighScores>> GetAllUsersHighScore()
+    {
+        var users = await _userRepository.GetAllAsync();
+        var response = new AllUsersHighScores()
+        {
+            Users = new List<UserHighScore>()
+        };
+        var count = 0;
+        foreach (var user in users)
+        {
+            if (count < 3)
+            {
+                response.Users.Add(new UserHighScore
+                {
+                    HighScore = user.HighScore,
+                    Name = $"{user.Name} {user.LastName}",
+                    ReadingSpeed = user.ReadingSpeed
+                });
+                count++;
+            }
+            else break;
+        }
+
+        return AppResponse<AllUsersHighScores>.Success(response);
+    }
 }

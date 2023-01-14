@@ -43,5 +43,12 @@ namespace ReadingEnhancer.Controllers
             var userOk = await _userService.SubmitResult(results, GetUserBsonId());
             return Ok(userOk);
         }
+
+        [HttpGet("GetUsersHighScore")]
+        public async Task<IActionResult> GetUsersHighScores()
+        {
+            var response = await _userService.GetAllUsersHighScore();
+            return Ok(response.Data);
+        }
     }
 }
