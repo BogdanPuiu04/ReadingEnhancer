@@ -13,5 +13,7 @@ namespace ReadingEnhancer.Domain.Entities
         [MinLength(8)]
         public string Password { get; set; }
         public bool IsAdmin { get; set; }
+        public float HighScore { get; set; }
+        public float ReadingSpeed { get; set; }
     }
 }

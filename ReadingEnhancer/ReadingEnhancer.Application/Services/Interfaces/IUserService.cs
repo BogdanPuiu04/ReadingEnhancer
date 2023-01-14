@@ -13,4 +13,5 @@ public interface IUserService
     Task<AppResponse<User>> UpdateAsync(string id, User user);
     Task<AppResponse<bool>> DeleteAsync(string id);
     Task<AppResponse<string>> RefreshToken(string Id);
+    Task<AppResponse<bool>> SubmitResult(ResultsRequestModel resultsRequestModel,string userId);
 }

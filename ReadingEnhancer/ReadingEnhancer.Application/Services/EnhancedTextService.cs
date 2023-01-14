@@ -100,6 +100,11 @@ namespace ReadingEnhancer.Application.Services
         public async Task<AppResponse<ReadingTextResponseModel>> GetRandomTextAsync()
         {
             var enhancedText = await _enhancedTextRepository.GetRandomAsync();
+            while (!checkIfATextIsValidForTesting(enhancedText))
+            {
+                enhancedText = await _enhancedTextRepository.GetRandomAsync();
+            }
+
             var wordsCount = CalculateWords(enhancedText.Text);
             var enhanced = await EnhanceText(enhancedText.Text);
             enhancedText.Text = enhanced.Data;
@@ -222,6 +227,12 @@ namespace ReadingEnhancer.Application.Services
             var user = await _userRepository.GetFirstAsync(userId);
             if (!user.IsAdmin)
                 throw new UnauthorizedException("User is not authorized");
+        }
+
+        private bool checkIfATextIsValidForTesting(EnhancedText text)
+        {
+            return !text.QuestionsList.IsNullOrEmpty() &&
+                   text.QuestionsList.All(question => !question.Answers.IsNullOrEmpty());
         }
     }
 }

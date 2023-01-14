@@ -36,5 +36,12 @@ namespace ReadingEnhancer.Controllers
         {
             return Ok(await _userService.RefreshToken(GetUserBsonId()));
         }
+
+        [HttpPost("SubmitResults")]
+        public async Task<IActionResult> SubmitResults([FromBody] ResultsRequestModel results)
+        {
+            var userOk = await _userService.SubmitResult(results, GetUserBsonId());
+            return Ok(userOk);
+        }
     }
 }

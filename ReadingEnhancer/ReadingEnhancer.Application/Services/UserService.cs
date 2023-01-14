@@ -29,7 +29,9 @@ public class UserService : IUserService
         {
             Name = $"{matchingUser.Name} {matchingUser.LastName}",
             Token = JwtHandler.GetJwtToken(matchingUser.Id, _configuration),
-            IsAdmin = matchingUser.IsAdmin
+            IsAdmin = matchingUser.IsAdmin,
+            HighScore = matchingUser.HighScore,
+            ReadingSpeed = matchingUser.ReadingSpeed
         };
         return AppResponse<ResponseUserModel>.Success(res);
     }
@@ -46,7 +48,9 @@ public class UserService : IUserService
 
     public async Task<AppResponse<ResponseUserModel>> AddAsync(RegisterUserModel registerUserModel)
     {
+        //check if user is not null
         var user = await _userRepository.GetFirstAsync(user => user.Username == registerUserModel.Username);
+
         var generatedUser = new User()
         {
             Id = ObjectId.GenerateNewId().ToString(),
@@ -54,20 +58,25 @@ public class UserService : IUserService
             LastName = registerUserModel.LastName,
             Username = registerUserModel.Username,
             IsAdmin = false,
-            Password = PasswordHelper.ComputePasswordHash(registerUserModel.Password)
+            Password = PasswordHelper.ComputePasswordHash(registerUserModel.Password),
+            HighScore = 0,
+            ReadingSpeed = 0
         };
         await _userRepository.AddAsync(generatedUser);
         return AppResponse<ResponseUserModel>.Success((new ResponseUserModel
         {
             Name = $"{generatedUser.Name} {generatedUser.LastName}",
             Token = JwtHandler.GetJwtToken(generatedUser.Id, _configuration),
-            IsAdmin = generatedUser.IsAdmin
+            IsAdmin = generatedUser.IsAdmin,
+            HighScore = generatedUser.HighScore,
+            ReadingSpeed = generatedUser.ReadingSpeed
         }));
     }
 
-    public Task<AppResponse<User>> UpdateAsync(string id, User user)
+    public async Task<AppResponse<User>> UpdateAsync(string id, User user)
     {
-        throw new NotImplementedException();
+        var newUser = await _userRepository.UpdateOne(id, user);
+        return AppResponse<User>.Success(newUser);
     }
 
     public Task<AppResponse<bool>> DeleteAsync(string id)
@@ -83,5 +92,14 @@ public class UserService : IUserService
             Token = refreshToken
         };
         return await Task.FromResult(AppResponse<string>.Success(refreshTokenResponse.Token));
+    }
+
+    public async Task<AppResponse<bool>> SubmitResult(ResultsRequestModel result, string userId)
+    {
+        var user = await _userRepository.GetFirstAsync(userId);
+        user.HighScore = result.HighScore;
+        user.ReadingSpeed = result.ReadingSpeed;
+        await UpdateAsync(userId, user);
+        return AppResponse<bool>.Success(true);
     }
 }
