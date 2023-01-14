@@ -45,7 +45,7 @@ namespace ReadingEnhancer.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync(ReadingTextModel readingText)
         {
-            var result = await _enhancedService.AddAsync(readingText);
+            var result = await _enhancedService.AddAsync(readingText, GetUserBsonId());
             return Ok(result);
         }
 
@@ -66,8 +66,15 @@ namespace ReadingEnhancer.Controllers
         [HttpPost("ChangeText")]
         public async Task<IActionResult> ChangeText([FromBody] EnhancedText text)
         {
-            var result = await _enhancedService.UpdateAsync(text.Id, text);
+            var result = await _enhancedService.UpdateAsync(text.Id, text, GetUserBsonId());
             return Ok(result);
+        }
+
+        [HttpPost("AddNewText")]
+        public async Task<IActionResult> AddNewText([FromBody] EnhancedText text)
+        {
+            var result = await _enhancedService.AddNewText(text, GetUserBsonId());
+            return Ok(result.Data);
         }
     }
 }

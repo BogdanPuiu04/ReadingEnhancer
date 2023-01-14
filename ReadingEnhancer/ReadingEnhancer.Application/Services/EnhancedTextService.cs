@@ -43,8 +43,10 @@ namespace ReadingEnhancer.Application.Services
             return AppResponse<string>.Success("true");
         }
 
-        public async Task<AppResponse<EnhancedText>> AddAsync(ReadingTextModel readingText)
+        public async Task<AppResponse<EnhancedText>> AddAsync(ReadingTextModel readingText, string userId)
         {
+            var user = await _userRepository.GetFirstAsync(userId);
+            if (!user.IsAdmin) throw new UnauthorizedException("The user is not an admin.");
             var questions = (from question in readingText.Questions
                 let answers =
                     question.Answers.Select(answer => new Answer()
@@ -65,21 +67,32 @@ namespace ReadingEnhancer.Application.Services
             return AppResponse<EnhancedText>.Success(test);
         }
 
-        public async Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text)
+        public async Task<AppResponse<EnhancedText>> AddNewText(EnhancedText text, string userId)
         {
+            IsAdmin(userId);
+            if (text.Id != null && text.Id.Contains("not"))
+                text.Id = ObjectId.GenerateNewId().ToString();
+            var res = await _enhancedTextRepository.AddAsync(text);
+            return AppResponse<EnhancedText>.Success(res);
+        }
+
+        public async Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text, string userId)
+        {
+            IsAdmin(userId);
             foreach (var question in text.QuestionsList)
             {
-                if (question.Id.Contains("not"))
+                if (question.Id != null && question.Id.Contains("not"))
                 {
                     question.Id = ObjectId.GenerateNewId().ToString();
                 }
 
                 if (question.Answers.IsNullOrEmpty()) continue;
-                foreach (var answer in question.Answers.Where(answer => answer.Id.Contains("not")))
+                foreach (var answer in question.Answers.Where(answer => answer.Id != null && answer.Id.Contains("not")))
                 {
                     answer.Id = ObjectId.GenerateNewId().ToString();
                 }
             }
+
             var response = await _enhancedTextRepository.UpdateOne(id, text);
             return AppResponse<EnhancedText>.Success(response);
         }
@@ -98,8 +111,9 @@ namespace ReadingEnhancer.Application.Services
             return AppResponse<ReadingTextResponseModel>.Success(result);
         }
 
-        public async Task<AppResponse<bool>> DeleteAsync(string id)
+        public async Task<AppResponse<bool>> DeleteAsync(string id, string userId)
         {
+            IsAdmin(userId);
             var result = await GetAsync(id);
             //  await _enhancedTextRepository.RemoveOne(result);
             return AppResponse<bool>.Success(true);
@@ -201,6 +215,13 @@ namespace ReadingEnhancer.Application.Services
             }
 
             return wordCount;
+        }
+
+        private async void IsAdmin(string userId)
+        {
+            var user = await _userRepository.GetFirstAsync(userId);
+            if (!user.IsAdmin)
+                throw new UnauthorizedException("User is not authorized");
         }
     }
 }
