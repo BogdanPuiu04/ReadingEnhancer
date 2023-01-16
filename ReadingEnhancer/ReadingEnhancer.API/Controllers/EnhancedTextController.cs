@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -88,7 +87,6 @@ namespace ReadingEnhancer.Controllers
         [HttpPost("DeleteQuestion")]
         public async Task<IActionResult> DeleteQuestion([FromBody] DeleteQuestionModel questionModel)
         {
-            Console.WriteLine("IT GOT HERE");
             var text = await _enhancedService.GetAsync(questionModel.TextId);
             var question = text.Data.QuestionsList.First(question => question.Id == questionModel.QuestionId);
             text.Data.QuestionsList.Remove(question);

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReadingEnhancer.Application.Models;
@@ -49,6 +50,20 @@ namespace ReadingEnhancer.Controllers
         {
             var response = await _userService.GetAllUsersHighScore();
             return Ok(response.Data);
+        }
+
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var response = await _userService.GetAllAsync(GetUserBsonId());
+            return Ok(response.Data);
+        }
+
+        [HttpPost("ChangeAdminRights")]
+        public async Task<IActionResult> ChangeAdmin([FromBody] string userId)
+        {
+            var response = await _userService.ChangeAdmin(userId, GetUserBsonId());
+            return Ok(response);
         }
     }
 }

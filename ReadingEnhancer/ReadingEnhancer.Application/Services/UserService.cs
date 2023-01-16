@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
 using ReadingEnhancer.Common;
+using ReadingEnhancer.Common.CustomExceptions;
 using ReadingEnhancer.Common.Handlers;
 using ReadingEnhancer.Domain.Entities;
 using ReadingEnhancer.Domain.Repositories;
@@ -36,9 +37,27 @@ public class UserService : IUserService
         return AppResponse<ResponseUserModel>.Success(res);
     }
 
-    public Task<AppResponse<List<User>>> GetAllAsync()
+    public async Task<AppResponse<AllUsersResponseModel>> GetAllAsync(string userId)
     {
-        throw new NotImplementedException();
+        IsAdmin(userId);
+        var users = await _userRepository.GetAllAsync();
+        var allUsers = new AllUsersResponseModel()
+        {
+            AllUsers = new List<UserResponseModel>()
+        };
+        foreach (var userResponse in users.Select(user => new UserResponseModel()
+                 {
+                     Id = user.Id,
+                     IsAdmin = user.IsAdmin,
+                     LastName = user.LastName,
+                     Name = user.Name,
+                     Username = user.Username
+                 }))
+        {
+            allUsers.AllUsers.Add(userResponse);
+        }
+
+        return AppResponse<AllUsersResponseModel>.Success(allUsers);
     }
 
     public Task<AppResponse<User>> GetAsync(string id)
@@ -128,5 +147,21 @@ public class UserService : IUserService
         }
 
         return AppResponse<AllUsersHighScores>.Success(response);
+    }
+
+    public async Task<AppResponse<bool>> ChangeAdmin(string id, string thisUser)
+    {
+        IsAdmin(thisUser);
+        var user = await _userRepository.GetFirstAsync(id);
+        user.IsAdmin = !user.IsAdmin;
+        await _userRepository.UpdateOne(id, user);
+        return AppResponse<bool>.Success(true);
+    }
+
+    private async void IsAdmin(string userId)
+    {
+        var user = await _userRepository.GetFirstAsync(userId);
+        if (!user.IsAdmin)
+            throw new UnauthorizedException("User is not authorized");
     }
 }
