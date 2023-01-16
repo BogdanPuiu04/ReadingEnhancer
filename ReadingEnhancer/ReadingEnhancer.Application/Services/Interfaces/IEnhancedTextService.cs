@@ -8,7 +8,7 @@ namespace ReadingEnhancer.Application.Services.Interfaces
     {
         Task<AppResponse<AllReadingTextsResponse>> GetAllAsync(string user);
         Task<AppResponse<ReadingTextResponseModel>> GetRandomTextAsync();
-        Task<AppResponse<string>> GetAsync(string id);
+        Task<AppResponse<EnhancedText>> GetAsync(string id);
         Task<AppResponse<EnhancedText>> AddAsync(ReadingTextModel text,string userId);
         Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text,string userId);
         Task<AppResponse<bool>> DeleteAsync(string id,string userId);

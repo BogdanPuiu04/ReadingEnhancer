@@ -38,9 +38,13 @@ namespace ReadingEnhancer.Application.Services
             return AppResponse<AllReadingTextsResponse>.Success(allTextsResponse);
         }
 
-        public async Task<AppResponse<string>> GetAsync(string id)
+        public async Task<AppResponse<EnhancedText>> GetAsync(string id)
         {
-            return AppResponse<string>.Success("true");
+            var text = await _enhancedTextRepository.GetFirstAsync(id);
+            if (!text.Id.IsNullOrEmpty())
+                return AppResponse<EnhancedText>.Success(text);
+            
+            throw new NotFoundException("Text not found");
         }
 
         public async Task<AppResponse<EnhancedText>> AddAsync(ReadingTextModel readingText, string userId)
@@ -120,7 +124,7 @@ namespace ReadingEnhancer.Application.Services
         {
             IsAdmin(userId);
             var result = await GetAsync(id);
-            //  await _enhancedTextRepository.RemoveOne(result);
+            await _enhancedTextRepository.RemoveOne(result.Data);
             return AppResponse<bool>.Success(true);
         }
 

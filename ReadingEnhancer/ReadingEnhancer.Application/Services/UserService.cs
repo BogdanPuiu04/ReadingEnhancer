@@ -106,12 +106,13 @@ public class UserService : IUserService
     public async Task<AppResponse<AllUsersHighScores>> GetAllUsersHighScore()
     {
         var users = await _userRepository.GetAllAsync();
+        var filteredUsers = users.OrderByDescending(user => user.HighScore).ThenBy(user => user.ReadingSpeed).ToList();
         var response = new AllUsersHighScores()
         {
             Users = new List<UserHighScore>()
         };
         var count = 0;
-        foreach (var user in users)
+        foreach (var user in filteredUsers)
         {
             if (count < 3)
             {
