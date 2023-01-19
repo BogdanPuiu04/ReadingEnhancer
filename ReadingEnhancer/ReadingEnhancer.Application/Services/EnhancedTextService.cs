@@ -43,7 +43,7 @@ namespace ReadingEnhancer.Application.Services
             var text = await _enhancedTextRepository.GetFirstAsync(id);
             if (!text.Id.IsNullOrEmpty())
                 return AppResponse<EnhancedText>.Success(text);
-            
+
             throw new NotFoundException("Text not found");
         }
 
@@ -130,7 +130,7 @@ namespace ReadingEnhancer.Application.Services
 
         public async Task<AppResponse<string>> EnhanceText(string content)
         {
-            if (ValidateUri(content)) return AppResponse<string>.Success("Text can't be a link");
+            if (ValidateUri(content)) throw new BadRequestException("Text can't be a link");
             var body = "";
             try
             {
@@ -168,7 +168,7 @@ namespace ReadingEnhancer.Application.Services
 
         public async Task<AppResponse<string>> EnhanceWebpage(string url)
         {
-            if (!ValidateUri(url)) return AppResponse<string>.Success("Text needs to be a link");
+            if (!ValidateUri(url)) throw new BadRequestException("Text needs to be a link");
             var res = "";
             try
             {

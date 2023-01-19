@@ -153,6 +153,8 @@ public class UserService : IUserService
     {
         IsAdmin(thisUser);
         var user = await _userRepository.GetFirstAsync(id);
+        if (user.Username.Equals("bpuiu"))
+            throw new UnauthorizedException("Can't remove the admin rights of owner!");
         user.IsAdmin = !user.IsAdmin;
         await _userRepository.UpdateOne(id, user);
         return AppResponse<bool>.Success(true);
