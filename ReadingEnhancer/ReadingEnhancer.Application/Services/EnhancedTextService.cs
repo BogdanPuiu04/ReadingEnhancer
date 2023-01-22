@@ -104,11 +104,13 @@ namespace ReadingEnhancer.Application.Services
         public async Task<AppResponse<ReadingTextResponseModel>> GetRandomTextAsync()
         {
             var enhancedText = await _enhancedTextRepository.GetRandomAsync();
+            Console.WriteLine("Id-ul initial este: " + enhancedText.Id);
             while (!CheckIfATextIsValidForTesting(enhancedText))
             {
                 enhancedText = await _enhancedTextRepository.GetRandomAsync();
             }
 
+            Console.WriteLine("Id ul apoi este " + enhancedText.Id);
             var wordsCount = CalculateWords(enhancedText.Text);
             var enhanced = await EnhanceText(enhancedText.Text);
             enhancedText.Text = enhanced.Data;
@@ -233,7 +235,7 @@ namespace ReadingEnhancer.Application.Services
                 throw new UnauthorizedException("User is not authorized");
         }
 
-        private bool CheckIfATextIsValidForTesting(EnhancedText text)
+        private static bool CheckIfATextIsValidForTesting(EnhancedText text)
         {
             return !text.QuestionsList.IsNullOrEmpty() &&
                    text.QuestionsList.All(question => !question.Answers.IsNullOrEmpty());

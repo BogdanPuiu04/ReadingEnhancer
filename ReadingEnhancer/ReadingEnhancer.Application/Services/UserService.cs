@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
@@ -69,7 +70,8 @@ public class UserService : IUserService
     {
         //check if user is not null
         var user = await _userRepository.GetFirstAsync(user => user.Username == registerUserModel.Username);
-
+        if (!user.Id.IsNullOrEmpty())
+            throw new ConflictException("Username taken");
         var generatedUser = new User()
         {
             Id = ObjectId.GenerateNewId().ToString(),
