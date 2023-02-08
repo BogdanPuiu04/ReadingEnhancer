@@ -15,7 +15,7 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
-
+    private readonly string api;
     public UserService(IUserRepository userRepository, IConfiguration configuration)
     {
         _userRepository = userRepository;
@@ -40,7 +40,11 @@ public class UserService : IUserService
 
     public async Task<AppResponse<AllUsersResponseModel>> GetAllAsync(string userId)
     {
-        IsAdmin(userId);
+        if (!await IsAdmin(userId))
+        {
+            throw new UnauthorizedException("User is not authorized");
+        }
+        
         var users = await _userRepository.GetAllAsync();
         var allUsers = new AllUsersResponseModel()
         {
@@ -61,14 +65,8 @@ public class UserService : IUserService
         return AppResponse<AllUsersResponseModel>.Success(allUsers);
     }
 
-    public Task<AppResponse<User>> GetAsync(string id)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<AppResponse<ResponseUserModel>> AddAsync(RegisterUserModel registerUserModel)
     {
-        //check if user is not null
         var user = await _userRepository.GetFirstAsync(user => user.Username == registerUserModel.Username);
         if (!user.Id.IsNullOrEmpty())
             throw new ConflictException("Username taken");
@@ -94,15 +92,10 @@ public class UserService : IUserService
         }));
     }
 
-    public async Task<AppResponse<User>> UpdateAsync(string id, User user)
+    private async Task UpdateAsync(string id, User user)
     {
         var newUser = await _userRepository.UpdateOne(id, user);
-        return AppResponse<User>.Success(newUser);
-    }
-
-    public Task<AppResponse<bool>> DeleteAsync(string id)
-    {
-        throw new NotImplementedException();
+        AppResponse<User>.Success(newUser);
     }
 
     public async Task<AppResponse<string>> RefreshToken(string id)
@@ -153,7 +146,8 @@ public class UserService : IUserService
 
     public async Task<AppResponse<bool>> ChangeAdmin(string id, string thisUser)
     {
-        IsAdmin(thisUser);
+        if (!await IsAdmin(thisUser))
+            throw new UnauthorizedException("User is not authorized");
         var user = await _userRepository.GetFirstAsync(id);
         if (user.Username.Equals("bpuiu"))
             throw new UnauthorizedException("Can't remove the admin rights of owner!");
@@ -162,10 +156,9 @@ public class UserService : IUserService
         return AppResponse<bool>.Success(true);
     }
 
-    private async void IsAdmin(string userId)
+    private async Task<bool> IsAdmin(string userId)
     {
         var user = await _userRepository.GetFirstAsync(userId);
-        if (!user.IsAdmin)
-            throw new UnauthorizedException("User is not authorized");
+        return user.IsAdmin;
     }
 }

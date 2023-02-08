@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using ReadingEnhancer.Application.Models;
 using ReadingEnhancer.Application.Services.Interfaces;
@@ -14,16 +15,20 @@ namespace ReadingEnhancer.Application.Services
         private readonly IEnhancedTextRepository _enhancedTextRepository;
         private readonly HttpClient _httpClient;
         private readonly IUserRepository _userRepository;
-
+        private readonly string? _api;
+        private readonly string? _host;
+        
         private static bool ValidateUri(string url) => Uri.TryCreate(url, UriKind.Absolute, out var uriResult) &&
                                                        uriResult.Scheme == Uri.UriSchemeHttps;
 
         public EnhancedTextService(IEnhancedTextRepository enhancedTextRepository, HttpClient httpClient,
-            IUserRepository userRepository)
+            IUserRepository userRepository, IConfiguration config)
         {
             _enhancedTextRepository = enhancedTextRepository;
             _httpClient = httpClient;
             _userRepository = userRepository;
+            _api = config["ApiKey"];
+            _host = config["ApiHost"];
         }
 
         public async Task<AppResponse<AllReadingTextsResponse>> GetAllAsync(string userId)
@@ -67,13 +72,17 @@ namespace ReadingEnhancer.Application.Services
                 Text = readingText.Text,
                 QuestionsList = questions
             };
-            var test = await _enhancedTextRepository.AddAsync(enhancedText);
-            return AppResponse<EnhancedText>.Success(test);
+            var returnedText = await _enhancedTextRepository.AddAsync(enhancedText);
+            return AppResponse<EnhancedText>.Success(returnedText);
         }
 
         public async Task<AppResponse<EnhancedText>> AddNewText(EnhancedText text, string userId)
         {
-            IsAdmin(userId);
+            if (!await IsAdmin(userId))
+            {
+                throw new BadRequestException("User is not an admin)");
+            }
+
             if (text.Id != null && text.Id.Contains("not"))
                 text.Id = ObjectId.GenerateNewId().ToString();
             var res = await _enhancedTextRepository.AddAsync(text);
@@ -82,7 +91,11 @@ namespace ReadingEnhancer.Application.Services
 
         public async Task<AppResponse<EnhancedText>> UpdateAsync(string id, EnhancedText text, string userId)
         {
-            IsAdmin(userId);
+            if (!await IsAdmin(userId))
+            {
+                throw new BadRequestException("User is not an admin)");
+            }
+
             foreach (var question in text.QuestionsList)
             {
                 if (question.Id != null && question.Id.Contains("not"))
@@ -104,13 +117,11 @@ namespace ReadingEnhancer.Application.Services
         public async Task<AppResponse<ReadingTextResponseModel>> GetRandomTextAsync()
         {
             var enhancedText = await _enhancedTextRepository.GetRandomAsync();
-            Console.WriteLine("Id-ul initial este: " + enhancedText.Id);
             while (!CheckIfATextIsValidForTesting(enhancedText))
             {
                 enhancedText = await _enhancedTextRepository.GetRandomAsync();
             }
 
-            Console.WriteLine("Id ul apoi este " + enhancedText.Id);
             var wordsCount = CalculateWords(enhancedText.Text);
             var enhanced = await EnhanceText(enhancedText.Text);
             enhancedText.Text = enhanced.Data;
@@ -124,7 +135,11 @@ namespace ReadingEnhancer.Application.Services
 
         public async Task<AppResponse<bool>> DeleteAsync(string id, string userId)
         {
-            IsAdmin(userId);
+            if (!await IsAdmin(userId))
+            {
+                throw new BadRequestException("User is not an admin)");
+            }
+
             var result = await GetAsync(id);
             await _enhancedTextRepository.RemoveOne(result.Data);
             return AppResponse<bool>.Success(true);
@@ -142,8 +157,8 @@ namespace ReadingEnhancer.Application.Services
                     RequestUri = new Uri("https://bionic-reading1.p.rapidapi.com/convert"),
                     Headers =
                     {
-                        {"X-RapidAPI-Key", "afb7bc5b7amsh840a44eaaf446ebp1d57f1jsn36b271e187bc"},
-                        {"X-RapidAPI-Host", "bionic-reading1.p.rapidapi.com"},
+                        {"X-RapidAPI-Key", _api},
+                        {"X-RapidAPI-Host", _host},
                     },
                     Content = new FormUrlEncodedContent(new Dictionary<string, string>
                     {
@@ -160,9 +175,9 @@ namespace ReadingEnhancer.Application.Services
                 response.EnsureSuccessStatusCode();
                 body = await response.Content.ReadAsStringAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine("Exception:" + e.Message);
+                throw new BadRequestException("Text is invalid");
             }
 
             return AppResponse<string>.Success(body);
@@ -171,7 +186,6 @@ namespace ReadingEnhancer.Application.Services
         public async Task<AppResponse<string>> EnhanceWebpage(string url)
         {
             if (!ValidateUri(url)) throw new BadRequestException("Text needs to be a link");
-            var res = "";
             try
             {
                 var request = new HttpRequestMessage()
@@ -180,8 +194,8 @@ namespace ReadingEnhancer.Application.Services
                     RequestUri = new Uri("https://bionic-reading1.p.rapidapi.com/convert"),
                     Headers =
                     {
-                        {"X-RapidAPI-Key", "afb7bc5b7amsh840a44eaaf446ebp1d57f1jsn36b271e187bc"},
-                        {"X-RapidAPI-Host", "bionic-reading1.p.rapidapi.com"},
+                        {"X-RapidAPI-Key", _api},
+                        {"X-RapidAPI-Host", _host},
                     },
                     Content = new FormUrlEncodedContent(new Dictionary<string, string>
                     {
@@ -196,15 +210,13 @@ namespace ReadingEnhancer.Application.Services
                 };
                 var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
-                res = await response.Content.ReadAsStringAsync();
+                var res = await response.Content.ReadAsStringAsync();
                 return AppResponse<string>.Success(res);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine("Exception:" + e.Message);
+                throw new BadRequestException("Webpage is either not available or it is not valid");
             }
-
-            return AppResponse<string>.Success(res);
         }
 
         private static int CalculateWords(string text)
@@ -228,11 +240,10 @@ namespace ReadingEnhancer.Application.Services
             return wordCount;
         }
 
-        private async void IsAdmin(string userId)
+        private async Task<bool> IsAdmin(string userId)
         {
             var user = await _userRepository.GetFirstAsync(userId);
-            if (!user.IsAdmin)
-                throw new UnauthorizedException("User is not authorized");
+            return user.IsAdmin;
         }
 
         private static bool CheckIfATextIsValidForTesting(EnhancedText text)

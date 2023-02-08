@@ -13,7 +13,6 @@ namespace ReadingEnhancer.DataAccess.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly IMongoCollection<User> _userCollection;
-    private IUserRepository _userRepositoryImplementation;
 
 
     public UserRepository(IOptions<DatabaseSettings> databaseSettings)

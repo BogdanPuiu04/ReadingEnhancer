@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ReadingEnhancer.Common\ReadingEnhancer.Common.csproj" />
+      <ProjectReference Include="..\ReadingEnhancer.DataAccess\ReadingEnhancer.DataAccess.csproj" />
       <ProjectReference Include="..\ReadingEnhancer.Domain\ReadingEnhancer.Domain.csproj" />
     </ItemGroup>
 

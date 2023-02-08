@@ -20,8 +20,8 @@ namespace ReadingEnhancer.IoC
     {
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IEnhancedTextRepository, EnhancedTextRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IEnhancedTextRepository, EnhancedTextRepository>();
         }
 
         public static void AddServices(this IServiceCollection services)
